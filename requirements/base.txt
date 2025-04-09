@@ -13,3 +13,4 @@ Unidecode
 six
 python-dotenv
 bokeh
+djangorestframework
