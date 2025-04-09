@@ -4,12 +4,15 @@ LIpid Membranes Open Network And DAtabase
 
 __Installation__
 
+This project requires Python 3.9 or earlier.
+
 1. git clone https://github.com/LimonadaMD/LimonadaMD.git
-2. pip install requirements/dev.txt
-3. apt-get install sqlite3 openbabel
-4. sqlite3 db.sqlite3 < db.sqlite3.txt
-5. python manage.py migrate
-6. python manage.py runserver
+2. python3 -m pip install numpy
+3. pip install -r requirements/dev.txt
+4. apt-get install sqlite3 openbabel
+5. sqlite3 db.sqlite3 < db.sqlite3.txt
+6. python manage.py migrate
+7. python manage.py runserver
 
 __Configuration__
 
