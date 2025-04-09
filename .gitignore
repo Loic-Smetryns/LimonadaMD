@@ -92,4 +92,4 @@ ENV/
 .idea
 
 #database
-db.sqlite3
+limonada/db.sqlite3
