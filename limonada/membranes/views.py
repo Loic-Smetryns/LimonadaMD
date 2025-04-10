@@ -55,6 +55,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 
+# Django REST framework
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+
 # Django apps
 from forcefields.models import Forcefield, Software
 from limonada.functions import FileData, review_notification
@@ -66,6 +69,7 @@ from .forms import MemCommentForm, MembraneForm, MembraneTopolForm, MemFormSet, 
 from .functions import compo_isvalid, membrane_residues, membraneanalysis, nb_lip_per_leaflet
 from .models import MemComment, Composition, Membrane, MembraneTopol, TopolComposition
 from .models import MembraneProt, MembraneDoi, MembraneTag
+from .serializers import MemListSerializer, MemDetailSerializer
 
 
 def zipdir(path, ziph):
@@ -1121,3 +1125,38 @@ class MembraneTagAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             qs = qs.filter(tag__icontains=self.q)
         return qs
+
+"""
+    REST API
+"""
+
+class APIMemList(ListAPIView):
+    """
+    Retrieves a list of membrane topologies, sorted by the number of lipid types in descending order.
+    Each membrane entry includes detailed information such as tags, lipid species count, total lipids,
+    force field name, and URLs for accessing membrane and composition files.
+
+    The JSON response contains the following fields for each membrane:
+    - details: URL to access detailed information about the membrane.
+    - name: The name of the membrane.
+    - tags: List of tags associated with the membrane.
+    - lipid_species: Number of different lipid types in the membrane.
+    - lipids: Total number of lipids in the membrane.
+    - forcefield: The name of the force field applied to the membrane.
+    - forcefield_details : URL to access detailed information about the forcefield applied to the membrane.
+    - membrane_file: URL to download the membrane file.
+    - composition_file: URL to download the composition file of the membrane.
+    """
+    
+    queryset = MembraneTopol.objects.all().order_by('-membrane__nb_liptypes')
+    serializer_class = MemListSerializer
+    
+    def get_view_name(self):
+        return "Membranes"
+    
+class APIMemDetail(RetrieveAPIView):
+    queryset = MembraneTopol.objects.all()
+    serializer_class = MemDetailSerializer
+    
+    def get_view_name(self):
+        return "Membrane"

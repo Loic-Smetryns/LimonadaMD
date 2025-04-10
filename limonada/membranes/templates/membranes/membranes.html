@@ -179,7 +179,7 @@
               <td>{{ membrane.membrane.nb_liptypes }}</td>
               <td>{{ membrane.nb_lipids }}</td>
               <td>
-                <a class="text-success" href="{% url 'fflist' %}?ffid={{ membrane.forcefield.pk }}">
+                <a class="text-success" href="{% url 'ffdetail' membrane.forcefield.id %}">
                     {{ membrane.forcefield }}</a>
               </td>
               <td>

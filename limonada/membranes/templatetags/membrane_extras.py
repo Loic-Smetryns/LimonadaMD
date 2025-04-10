@@ -29,13 +29,7 @@ register = template.Library()
 def lipidnames(qs):
     """ This function makes a list of lipid species in the composition.
     """
-    lipids = []
-    for comp in qs:
-        lip = comp.topology.lipid
-        if lip not in lipids:
-            lipids.append(lip)
-
-    return lipids
+    return list({comp.lipid for comp in qs.select_related('lipid')})
 
 
 @register.simple_tag()
@@ -63,13 +57,7 @@ def times(number):
 
 @register.simple_tag
 def boolean(val=None):
-
-    if val == 0:
-        val = 1
-    else:
-        val = 0
-
-    return val
+    return 1 if val == 0 else 0
 
 
 @register.filter(name='hash')

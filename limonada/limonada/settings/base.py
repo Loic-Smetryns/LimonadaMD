@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'limonada.univ-reims.fr']
 
 # Application definition
 PREREQ_APPS = [
+    'rest_framework',
     'dal',
     'dal_select2',
     'django.contrib.admin',
@@ -206,6 +207,13 @@ def ip_addresses():
 # ALLOWED_HOSTS = ip_addresses()
 
 INTERNAL_IPS = ['127.0.0.1']
+
+# Django REST framework configuration
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 15
+}
 
 # User configuration
 GROMACS_33_PATH = '/home/jmcrowet/Software/gmx334/bin/'
