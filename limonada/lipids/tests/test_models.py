@@ -314,7 +314,7 @@ class LipidModelTest(TestCase):
 class TopologyResidueModelTest(TestCase):
 
     def setUp(self):
-        self.topologyresidue = TopologyResidue(residue='POPC')
+        self.topologyresidue = TopologyResidue(name='POPC')
 
     def test_create(self):
         """TopologyResidue must have residue.
@@ -326,12 +326,12 @@ class TopologyResidueModelTest(TestCase):
     def test_name_unique(self):
         'residue must be unique'
         self.topologyresidue.save()
-        topres = TopologyResidue(residue='POPC') 
+        topres = TopologyResidue(name='POPC') 
         self.assertRaises(IntegrityError, topres.save)
 
     def test_object_name(self):
         'The topology object name is the residue'
-        expected_object_name = '%s' % self.topologyresidue.residue
+        expected_object_name = '%s' % self.topologyresidue.name
         self.topologyresidue.save()
         self.assertEquals(expected_object_name, str(self.topologyresidue))
 
