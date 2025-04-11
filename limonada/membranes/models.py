@@ -110,7 +110,7 @@ class MembraneTopol(models.Model):
                                  on_delete=models.CASCADE)
     forcefield = models.ForeignKey('forcefields.Forcefield',
                                    on_delete=models.CASCADE)
-    nb_lipids = models.PositiveIntegerField(null=True)
+    nb_lipids = models.PositiveIntegerField(null=True, default=0)
     description = models.TextField(blank=True)
     prot = models.ManyToManyField('membranes.MembraneProt',
                                   blank=True)
@@ -120,6 +120,19 @@ class MembraneTopol(models.Model):
                                 on_delete=models.CASCADE)
     doi = models.ManyToManyField('membranes.MembraneDoi',  # This file is used to add doi link for Zenodo
                                  blank=True)
+    
+    @property
+    def tags(self):
+        if self.membrane is None:
+            return []
+        return self.membrane.tag.all()
+    
+    @property
+    def lipid_species_count(self):
+        if self.membrane is None:
+            return 0
+        return self.membrane.nb_liptypes
+    
     # salt []
 
     def __str__(self):
@@ -135,7 +148,6 @@ class MembraneTopol(models.Model):
             self.mem_file = saved_mem_file
             self.other_file = saved_other_file
         super(MembraneTopol, self).save(*args, **kwargs)
-
 
 class TopolComposition(models.Model):
 
