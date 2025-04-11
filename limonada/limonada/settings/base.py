@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'limonada.univ-reims.fr']
 
 # Application definition
 PREREQ_APPS = [
+    'debug_toolbar',
     'rest_framework',
     'dal',
     'dal_select2',
@@ -41,7 +42,6 @@ PREREQ_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
     'corsheaders',
 ]
 

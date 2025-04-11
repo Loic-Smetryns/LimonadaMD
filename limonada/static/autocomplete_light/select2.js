@@ -1,4 +1,4 @@
-;(function ($) {
+;(function () {
     function get_forwards(element) {
         var forwardElem, forwardList, prefix, forwardedData, divSelector, form;
         divSelector = "div.dal-forward-conf#dal-forward-conf-for-" +

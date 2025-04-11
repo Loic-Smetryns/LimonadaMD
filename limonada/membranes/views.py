@@ -1133,19 +1133,16 @@ class MembraneTagAutocomplete(autocomplete.Select2QuerySetView):
 class APIMemList(ListAPIView):
     """
     Retrieves a list of membrane topologies, sorted by the number of lipid types in descending order.
-    Each membrane entry includes detailed information such as tags, lipid species count, total lipids,
-    force field name, and URLs for accessing membrane and composition files.
 
-    The JSON response contains the following fields for each membrane:
-    - details: URL to access detailed information about the membrane.
-    - name: The name of the membrane.
-    - tags: List of tags associated with the membrane.
-    - lipid_species: Number of different lipid types in the membrane.
-    - lipids: Total number of lipids in the membrane.
-    - forcefield: The name of the force field applied to the membrane.
-    - forcefield_details : URL to access detailed information about the forcefield applied to the membrane.
-    - membrane_file: URL to download the membrane file.
-    - composition_file: URL to download the composition file of the membrane.
+    This endpoint provides detailed information about each membrane, including:
+    - **details**: URL to access detailed information about the membrane.
+    - **name**: The name of the membrane.
+    - **tags**: List of tags associated with the membrane.
+    - **lipid_species**: Number of different lipid types in the membrane.
+    - **lipids**: Total number of lipids in the membrane.
+    - **forcefield**: Detailed information about the force field used for the membrane.
+    - **membrane_file**: URL to download the membrane file.
+    - **composition_file**: URL to download the composition file of the membrane.
     """
     
     queryset = MembraneTopol.objects.all().order_by('-membrane__nb_liptypes')
@@ -1155,6 +1152,29 @@ class APIMemList(ListAPIView):
         return "Membranes"
     
 class APIMemDetail(RetrieveAPIView):
+    """
+    Retrieves detailed information about a specific membrane topology.
+
+    This endpoint provides comprehensive details about a membrane, including:
+    - **name**: The name of the membrane.
+    - **lipid_species**: Number of different lipid types in the membrane.
+    - **lipids**: Detailed information about the lipids in the membrane.
+    - **forcefield**: Detailed information about the force field used for the membrane.
+    - **software**: Name and version of the software used for the membrane.
+    - **membrane_file**: URL to download the membrane file.
+    - **composition_file**: URL to download the composition file of the membrane.
+    - **parameters_and_other_files**: URL to download other parameter files related to the membrane.
+    - **simulation_files**: URL to access simulation files for the membrane.
+    - **lipids_number**: Total number of lipids in the membrane.
+    - **temperature**: Temperature information related to the membrane.
+    - **equilibration**: Equilibration details of the membrane.
+    - **tags**: List of tags associated with the membrane.
+    - **proteins**: List of proteins associated with the membrane.
+    - **description**: Description of the membrane.
+    - **reference**: References related to the membrane.
+    - **composition**: Detailed composition of the membrane, including lipid proportions.
+    """
+    
     queryset = MembraneTopol.objects.all()
     serializer_class = MemDetailSerializer
     
