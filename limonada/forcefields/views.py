@@ -41,6 +41,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 
+# Django REST framework
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+
 # Django apps
 from limonada.functions import FileData, review_notification
 from lipids.models import Topology
@@ -49,7 +52,7 @@ from membranes.models import MembraneTopol
 # local Django
 from .forms import ForcefieldForm, SelectForcefieldForm, FfCommentForm
 from .models import Forcefield, Software, FfComment
-
+from .serializers import FfListSerializer, FfDetailsSerialize
 
 @never_cache
 def FfList(request):
@@ -286,3 +289,48 @@ class SoftwareAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             qs = qs.filter(name__icontains=self.q)
         return qs
+
+"""
+    REST API
+"""
+
+class APIFfList(ListAPIView):
+    """
+    Retrieves a list of force fields, sorted by name in ascending order.
+
+    This endpoint provides essential information about each force field, including:\n
+    - **name**: Name of the force field.\n
+    - **details**: URL to access detailed metadata about the force field.\n
+    - **software**: Name of the primary software associated with the force field.\n
+    - **type**: Type categorization of the force field (e.g., atomistic, coarse-grained).\n
+    - **forcefield_file**: URL to download the force field parameter file.\n
+    - **parameters_file**: URL to download the molecular dynamics parameters file.\n
+    """
+    
+    queryset = Forcefield.objects.all().order_by('name')
+        
+    serializer_class = FfListSerializer
+    
+    def get_view_name(self):
+        return "Forcefields"
+
+class APIFfDetails(RetrieveAPIView):
+    """
+    Retrieves comprehensive details about a specific force field.
+
+    This endpoint provides complete technical information about a force field, including:\n
+    - **name**: Name of the force field.\n
+    - **type**: Type categorization of the force field (e.g., atomistic, coarse-grained).\n
+    - **forcefield_file**: URL to download the force field parameter file.\n
+    - **parameters_file**: URL to download the molecular dynamics parameters file.\n
+    - **software**: List of software names associated with the force field.\n
+    - **description**: Detailed technical description of the force field.\n
+    - **references**: List of bibliographic references related to the force field's development.\n
+    """
+    
+    queryset = Forcefield.objects.all().order_by('name')
+        
+    serializer_class = FfDetailsSerialize
+    
+    def get_view_name(self):
+        return "Forcefield"

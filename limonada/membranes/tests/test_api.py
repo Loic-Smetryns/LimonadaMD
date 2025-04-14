@@ -227,7 +227,7 @@ class ManyNullFieldAPIMemDetailTestCase(APITestCase):
         self.assertTrue('tags' in response.data.keys())
         self.assertTrue('proteins' in response.data.keys())
         self.assertTrue('description' in response.data.keys())
-        self.assertTrue('reference' in response.data.keys())
+        self.assertTrue('references' in response.data.keys())
         self.assertTrue('composition' in response.data.keys())
         
         # check fields
@@ -247,7 +247,7 @@ class ManyNullFieldAPIMemDetailTestCase(APITestCase):
         self.assertEqual(m['tags'], [])
         self.assertEqual(m['proteins'], [])
         self.assertEqual(m['description'], '')
-        self.assertEqual(m['reference'], [])
+        self.assertEqual(m['references'], [])
         self.assertEqual(m['composition'], {})
         
 class FilledFieldAPIMemDetailTestCase(APITestCase):
@@ -314,7 +314,7 @@ class FilledFieldAPIMemDetailTestCase(APITestCase):
         self.assertTrue('tags' in response.data.keys())
         self.assertTrue('proteins' in response.data.keys())
         self.assertTrue('description' in response.data.keys())
-        self.assertTrue('reference' in response.data.keys())
+        self.assertTrue('references' in response.data.keys())
         self.assertTrue('composition' in response.data.keys())
         
         # check fields
@@ -341,7 +341,7 @@ class FilledFieldAPIMemDetailTestCase(APITestCase):
         self.assertEqual(m['tags'], ['mammalian', 'plasma membrane'])
         self.assertEqual(m['proteins'], [])
         self.assertEqual(m['description'], '')
-        self.assertEqual(m['reference'], [])
+        self.assertEqual(m['references'], [])
         
         upper = m['composition']['upper_leaflet']
         lower = m['composition']['lower_leaflet']

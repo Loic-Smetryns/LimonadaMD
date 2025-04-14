@@ -25,12 +25,12 @@ from collections import defaultdict
 
 from django.urls import reverse
 from rest_framework.serializers import (HyperlinkedModelSerializer, SlugRelatedField, SerializerMethodField,
-                                        IntegerField, CharField)
+                                        IntegerField, StringRelatedField)
 
-from .models import Membrane, MembraneTopol, MembraneTag, TopolComposition
+from .models import MembraneTopol, TopolComposition
 from lipids.models import Lipid, Topology
 from forcefields.models import Forcefield
-from homepage.serializers import ReferenceSerializer
+from homepage.serializers import ReferenceSerializer, FileField
 
 class ForcefieldSerializer(HyperlinkedModelSerializer):
     """
@@ -76,8 +76,6 @@ class MemListSerializer(HyperlinkedModelSerializer):
 
     Methods:
     - get_details(membrane): Returns the absolute URL for membrane details.
-    - get_membrane_file(membrane): Returns the absolute URL for the membrane file.
-    - get_composition_file(membrane): Returns the absolute URL for the composition file.
 
     Meta:
     - model: Associated model (MembraneTopol).
@@ -88,8 +86,8 @@ class MemListSerializer(HyperlinkedModelSerializer):
     tags = SlugRelatedField(many=True, read_only=True, slug_field='tag')
     lipid_count = IntegerField(read_only=True, source='nb_lipids')
     forcefield = ForcefieldSerializer(read_only=True)
-    membrane_file = SerializerMethodField(read_only=True)
-    composition_file = SerializerMethodField(read_only=True)
+    membrane_file = FileField(read_only=True, source='mem_file')
+    composition_file = FileField(read_only=True, source='compo_file')
     
     class Meta:
         model = MembraneTopol
@@ -100,26 +98,6 @@ class MemListSerializer(HyperlinkedModelSerializer):
         url = reverse('api-memdetail', kwargs={'pk': membrane.id})
         
         return request.build_absolute_uri(url) if request is not None else url
-    
-    def get_membrane_file(self, membrane):
-        request = self.context.get('request')
-        file = membrane.mem_file
-        
-        #check if file is null
-        if file.name == "":
-            return ""
-        
-        return request.build_absolute_uri(file.url) if request is not None else file.url
-    
-    def get_composition_file(self, membrane):
-        request = self.context.get('request')
-        file = membrane.compo_file
-        
-        #check if file is null
-        if file.name == "":
-            return ""
-        
-        return request.build_absolute_uri(file.url) if request is not None else file.url
 
 class LipidSerializer(HyperlinkedModelSerializer):
     """
@@ -209,7 +187,7 @@ class TopolCompositionSerializer(HyperlinkedModelSerializer):
         return round(topol.number*100/total_number, 1) if total_number != None and total_number != 0 else 0.0
         
 
-class MemDetailSerializer(HyperlinkedModelSerializer):
+class MemDetailsSerializer(HyperlinkedModelSerializer):
     """
     Serializer for detailed representation of the MembraneTopol model, providing comprehensive membrane details in JSON format.
 
@@ -224,15 +202,12 @@ class MemDetailSerializer(HyperlinkedModelSerializer):
     - lipid_count: Total number of lipids in the membrane.
     - tags: List of tags associated with the membrane.
     - proteins: List of proteins associated with the membrane.
-    - reference: References related to the membrane.
+    - references: References related to the membrane.
     - composition: Detailed composition of the membrane, including lipid proportions.
 
     Methods:
     - get_lipids(membrane): Returns detailed information about the lipids in the membrane.
     - get_software(membrane): Returns the name and version of the software used for the membrane.
-    - get_membrane_file(membrane): Returns the absolute URL for the membrane file.
-    - get_composition_file(membrane): Returns the absolute URL for the composition file.
-    - get_parameters_and_other_files(membrane): Returns the absolute URL for other parameter files.
     - get_simulation_files(membrane): Returns the absolute URL to access simulation files.
     - get_composition(membrane): Returns the detailed composition of the membrane, including lipid proportions.
 
@@ -242,17 +217,16 @@ class MemDetailSerializer(HyperlinkedModelSerializer):
     """
     
     lipids = SerializerMethodField(read_only=True)
-    
     forcefield = ForcefieldSerializer(read_only=True)
-    software = SerializerMethodField(read_only=True)
-    membrane_file = SerializerMethodField(read_only=True)
-    composition_file = SerializerMethodField(read_only=True)
-    parameters_and_other_files = SerializerMethodField(read_only=True)
+    software = StringRelatedField(read_only=True)
+    membrane_file = FileField(read_only=True, source='mem_file')
+    composition_file = FileField(read_only=True, source='compo_file')
+    parameters_and_other_files = FileField(read_only=True, source='other_file')
     simulation_files = SerializerMethodField(read_only=True)
     lipid_count = IntegerField(read_only=True, source='nb_lipids')
     tags = SlugRelatedField(many=True, read_only=True, slug_field='tag')
     proteins = SlugRelatedField(many=True, read_only=True, slug_field='prot', source='prot')
-    reference = ReferenceSerializer(many=True, read_only=True)
+    references = ReferenceSerializer(many=True, read_only=True, source='reference')
     composition = SerializerMethodField(read_only=True)
     
     class Meta:
@@ -260,46 +234,13 @@ class MemDetailSerializer(HyperlinkedModelSerializer):
         fields=[ 
             'name', 'lipid_species_count', 'lipids', 'forcefield', 'software', 'membrane_file', 'composition_file',
             'parameters_and_other_files', 'simulation_files', 'lipid_count', 'temperature', 'equilibration', 'tags', 'proteins',
-            'description', 'reference', 'composition'
+            'description', 'references', 'composition'
         ]
     
     def get_lipids(self, membrane):
         compositions = membrane.topolcomposition_set.select_related('lipid', 'topology').all()
         unique_lipids = {comp.lipid for comp in compositions if comp.lipid}
         return LipidSerializer(unique_lipids, many=True, context=self.context).data
-    
-    def get_software(self, membrane):
-        if membrane.software.name == membrane.software.version == '':
-            return ''
-
-        return membrane.software.name + ' ' + membrane.software.version
-    
-    def get_membrane_file(self, membrane):
-        request = self.context.get('request')
-        file = membrane.mem_file
-        
-        if file.name == "":
-            return ""
-        
-        return request.build_absolute_uri(file.url) if request is not None else file.url
-    
-    def get_composition_file(self, membrane):
-        request = self.context.get('request')
-        file = membrane.compo_file
-        
-        if file.name == "":
-            return ""
-        
-        return request.build_absolute_uri(file.url) if request is not None else file.url
-    
-    def get_parameters_and_other_files(self, membrane):
-        request = self.context.get('request')
-        file = membrane.other_file
-        
-        if file.name == "":
-            return ""
-        
-        return request.build_absolute_uri(file.url) if request is not None else file.url
     
     def get_simulation_files(self, membrane):
         request = self.context.get('request')

@@ -124,7 +124,7 @@ class Software(models.Model):
     order = models.CharField(max_length=3)
 
     def __str__(self):
-        return "%s %s" % (self.name, self.version)
+        return "" if self.name == self.version == "" else "%s %s" % (self.name, self.version)
 
 
 @python_2_unicode_compatible

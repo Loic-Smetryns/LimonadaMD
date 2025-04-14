@@ -23,7 +23,7 @@
 from django.conf.urls import url
 
 # local Django
-from .views import FfCreate, FfDelete, FfDetail, FfList, FfUpdate, SoftwareAutocomplete
+from .views import FfCreate, FfDelete, FfDetail, FfList, FfUpdate, SoftwareAutocomplete, APIFfList, APIFfDetails
 
 urlpatterns = [
     url(r'^forcefields/$', FfList, name='fflist'),
@@ -33,6 +33,6 @@ urlpatterns = [
     url(r'^forcefields/(?P<pk>\d+)/delete/$', FfDelete, name='ffdelete'),
     url(r'^software-autocomplete/$', SoftwareAutocomplete.as_view(), name='software-autocomplete'),
     
-    url(r'^forcefields/api/v1/$', FfList, name="api-fflist"),
-    url(r'^forcefields/api/v1/(?P<pk>\d+)/$', FfDetail, name="api-ffdetail")
+    url(r'^forcefields/api/v1/$', APIFfList.as_view(), name="api-fflist"),
+    url(r'^forcefields/api/v1/(?P<pk>\d+)/$', APIFfDetails.as_view(), name="api-ffdetail")
 ]

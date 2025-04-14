@@ -69,7 +69,7 @@ from .forms import MemCommentForm, MembraneForm, MembraneTopolForm, MemFormSet, 
 from .functions import compo_isvalid, membrane_residues, membraneanalysis, nb_lip_per_leaflet
 from .models import MemComment, Composition, Membrane, MembraneTopol, TopolComposition
 from .models import MembraneProt, MembraneDoi, MembraneTag
-from .serializers import MemListSerializer, MemDetailSerializer
+from .serializers import MemListSerializer, MemDetailsSerializer
 
 
 def zipdir(path, ziph):
@@ -1134,15 +1134,15 @@ class APIMemList(ListAPIView):
     """
     Retrieves a list of membrane topologies, sorted by the number of lipid types in descending order.
 
-    This endpoint provides detailed information about each membrane, including:
-    - **details**: URL to access detailed information about the membrane.
-    - **name**: The name of the membrane.
-    - **tags**: List of tags associated with the membrane.
-    - **lipid_species_count**: Number of different lipid types in the membrane.
-    - **lipid_count**: Total number of lipids in the membrane.
-    - **forcefield**: Detailed information about the force field used for the membrane.
-    - **membrane_file**: URL to download the membrane file.
-    - **composition_file**: URL to download the composition file of the membrane.
+    This endpoint provides detailed information about each membrane, including:\n
+    - **details**: URL to access detailed information about the membrane.\n
+    - **name**: The name of the membrane.\n
+    - **tags**: List of tags associated with the membrane.\n
+    - **lipid_species_count**: Number of different lipid types in the membrane.\n
+    - **lipid_count**: Total number of lipids in the membrane.\n
+    - **forcefield**: Detailed information about the force field used for the membrane.\n
+    - **membrane_file**: URL to download the membrane file.\n
+    - **composition_file**: URL to download the composition file of the membrane.\n
     """
     
     queryset = MembraneTopol.objects.all() \
@@ -1155,35 +1155,35 @@ class APIMemList(ListAPIView):
     def get_view_name(self):
         return "Membranes"
     
-class APIMemDetail(RetrieveAPIView):
+class APIMemDetails(RetrieveAPIView):
     """
     Retrieves detailed information about a specific membrane topology.
 
-    This endpoint provides comprehensive details about a membrane, including:
-    - **name**: The name of the membrane.
-    - **lipid_species_count**: Number of different lipid types in the membrane.
-    - **lipids**: Detailed information about the lipids in the membrane.
-    - **forcefield**: Detailed information about the force field used for the membrane.
-    - **software**: Name and version of the software used for the membrane.
-    - **membrane_file**: URL to download the membrane file.
-    - **composition_file**: URL to download the composition file of the membrane.
-    - **parameters_and_other_files**: URL to download other parameter files related to the membrane.
-    - **simulation_files**: URL to access simulation files for the membrane.
-    - **lipid_count**: Total number of lipids in the membrane.
-    - **temperature**: Temperature information related to the membrane.
-    - **equilibration**: Equilibration details of the membrane.
-    - **tags**: List of tags associated with the membrane.
-    - **proteins**: List of proteins associated with the membrane.
-    - **description**: Description of the membrane.
-    - **reference**: References related to the membrane.
-    - **composition**: Detailed composition of the membrane, including lipid proportions.
+    This endpoint provides comprehensive details about a membrane, including:\n
+    - **name**: The name of the membrane.\n
+    - **lipid_species_count**: Number of different lipid types in the membrane.\n
+    - **lipids**: Detailed information about the lipids in the membrane.\n
+    - **forcefield**: Detailed information about the force field used for the membrane.\n
+    - **software**: Name and version of the software used for the membrane.\n
+    - **membrane_file**: URL to download the membrane file.\n
+    - **composition_file**: URL to download the composition file of the membrane.\n
+    - **parameters_and_other_files**: URL to download other parameter files related to the membrane.\n
+    - **simulation_files**: URL to access simulation files for the membrane.\n
+    - **lipid_count**: Total number of lipids in the membrane.\n
+    - **temperature**: Temperature information related to the membrane.\n
+    - **equilibration**: Equilibration details of the membrane.\n
+    - **tags**: List of tags associated with the membrane.\n
+    - **proteins**: List of proteins associated with the membrane.\n
+    - **description**: Description of the membrane.\n
+    - **references**: References related to the membrane.\n
+    - **composition**: Detailed composition of the membrane, including lipid proportions.\n
     """
     
     queryset = MembraneTopol.objects.all() \
         .select_related('membrane', 'software', 'forcefield', 'curator') \
         .prefetch_related('membrane__tag', 'prot', 'reference', 'doi', 'topolcomposition_set')
     
-    serializer_class = MemDetailSerializer
+    serializer_class = MemDetailsSerializer
     
     def get_view_name(self):
         return "Membrane"
