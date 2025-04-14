@@ -1145,7 +1145,11 @@ class APIMemList(ListAPIView):
     - **composition_file**: URL to download the composition file of the membrane.
     """
     
-    queryset = MembraneTopol.objects.all().order_by('-membrane__nb_liptypes')
+    queryset = MembraneTopol.objects.all() \
+        .select_related('membrane', 'forcefield') \
+        .prefetch_related('membrane__tag') \
+        .order_by('-membrane__nb_liptypes')
+        
     serializer_class = MemListSerializer
     
     def get_view_name(self):
@@ -1175,7 +1179,10 @@ class APIMemDetail(RetrieveAPIView):
     - **composition**: Detailed composition of the membrane, including lipid proportions.
     """
     
-    queryset = MembraneTopol.objects.all()
+    queryset = MembraneTopol.objects.all() \
+        .select_related('membrane', 'software', 'forcefield', 'curator') \
+        .prefetch_related('membrane__tag', 'prot', 'reference', 'doi', 'topolcomposition_set')
+    
     serializer_class = MemDetailSerializer
     
     def get_view_name(self):

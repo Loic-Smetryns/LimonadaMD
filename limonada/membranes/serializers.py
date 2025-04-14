@@ -57,7 +57,7 @@ class ForcefieldSerializer(HyperlinkedModelSerializer):
         
     def get_details(self, forcefield):
         request = self.context.get('request')
-        url = reverse('ffdetail', kwargs={'pk': forcefield.id})
+        url = reverse('api-ffdetail', kwargs={'pk': forcefield.id})
         
         return request.build_absolute_uri(url) if request is not None else url
 
@@ -76,7 +76,6 @@ class MemListSerializer(HyperlinkedModelSerializer):
 
     Methods:
     - get_details(membrane): Returns the absolute URL for membrane details.
-    - get_forcefield_details(membrane): Returns the absolute URL for force field details.
     - get_membrane_file(membrane): Returns the absolute URL for the membrane file.
     - get_composition_file(membrane): Returns the absolute URL for the composition file.
 
@@ -231,7 +230,6 @@ class MemDetailSerializer(HyperlinkedModelSerializer):
     Methods:
     - get_lipids(membrane): Returns detailed information about the lipids in the membrane.
     - get_software(membrane): Returns the name and version of the software used for the membrane.
-    - get_forcefield_details(membrane): Returns the absolute URL for force field details.
     - get_membrane_file(membrane): Returns the absolute URL for the membrane file.
     - get_composition_file(membrane): Returns the absolute URL for the composition file.
     - get_parameters_and_other_files(membrane): Returns the absolute URL for other parameter files.
@@ -271,6 +269,9 @@ class MemDetailSerializer(HyperlinkedModelSerializer):
         return LipidSerializer(unique_lipids, many=True, context=self.context).data
     
     def get_software(self, membrane):
+        if membrane.software.name == membrane.software.version == '':
+            return ''
+
         return membrane.software.name + ' ' + membrane.software.version
     
     def get_membrane_file(self, membrane):
@@ -295,6 +296,9 @@ class MemDetailSerializer(HyperlinkedModelSerializer):
         request = self.context.get('request')
         file = membrane.other_file
         
+        if file.name == "":
+            return ""
+        
         return request.build_absolute_uri(file.url) if request is not None else file.url
     
     def get_simulation_files(self, membrane):
@@ -317,6 +321,5 @@ class MemDetailSerializer(HyperlinkedModelSerializer):
             composition[format_side(topol_c.side)].append(
                 TopolCompositionSerializer(topol_c, context={**self.context, 'total_number': total_numbers[topol_c.side]}).data
             )
-        
         
         return composition

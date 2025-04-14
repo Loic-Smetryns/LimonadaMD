@@ -32,4 +32,7 @@ urlpatterns = [
     url(r'^forcefields/(?P<pk>\d+)/update/$', FfUpdate, name='ffupdate'),
     url(r'^forcefields/(?P<pk>\d+)/delete/$', FfDelete, name='ffdelete'),
     url(r'^software-autocomplete/$', SoftwareAutocomplete.as_view(), name='software-autocomplete'),
+    
+    url(r'^forcefields/api/v1/$', FfList, name="api-fflist"),
+    url(r'^forcefields/api/v1/(?P<pk>\d+)/$', FfDetail, name="api-ffdetail")
 ]

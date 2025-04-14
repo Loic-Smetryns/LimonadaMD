@@ -39,6 +39,7 @@ from django.dispatch.dispatcher import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.formats import localize
 from django.utils.translation import ugettext_lazy as _
+from django.utils.text import slugify
 
 # Django apps
 from limonada.functions import delete_file
@@ -224,10 +225,15 @@ class Lipid(models.Model):
     curator = models.ForeignKey(User,
                                 on_delete=models.CASCADE)
     date = models.DateField(auto_now=True)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True, blank=True)
 
     def __str__(self):
         return self.search_name
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.lmid.lower())
+        super(Lipid, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('lipdetail', args=[str(self.slug)])
