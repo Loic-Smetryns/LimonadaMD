@@ -24,42 +24,15 @@
 from collections import defaultdict
 
 from django.urls import reverse
+
 from rest_framework.serializers import (HyperlinkedModelSerializer, SlugRelatedField, SerializerMethodField,
                                         IntegerField, StringRelatedField)
 
 from .models import MembraneTopol, TopolComposition
 from lipids.models import Lipid, Topology
 from forcefields.models import Forcefield
-from homepage.serializers import ReferenceSerializer, FileField
-
-class ForcefieldSerializer(HyperlinkedModelSerializer):
-    """
-    Serializer for the Forcefield model, converting instances to JSON representations.
-    Provides detailed information about force fields used in membrane simulations.
-
-    Fields:
-    - **name**: The name of the force field.
-    - **details**: URL to access detailed information about the force field.
-
-    Methods:
-    - **get_details(forcefield)**: Generates an absolute URL for accessing detailed information about the force field.
-
-    Meta:
-    - **model**: The model associated with this serializer (Forcefield).
-    - **fields**: List of fields to include in the JSON representation (name, details).
-    """
-    
-    details = SerializerMethodField(read_only=True)
-    
-    class Meta:
-        model = Forcefield
-        fields = [ 'name', 'details' ]
-        
-    def get_details(self, forcefield):
-        request = self.context.get('request')
-        url = reverse('api-ffdetail', kwargs={'pk': forcefield.id})
-        
-        return request.build_absolute_uri(url) if request is not None else url
+from forcefields.serializers import ForcefieldSerializer
+from homepage.serializers import ReferenceSerializer, FileField, UrlField
 
 class MemListSerializer(HyperlinkedModelSerializer):
     """
@@ -74,15 +47,12 @@ class MemListSerializer(HyperlinkedModelSerializer):
     - membrane_file: URL to the membrane file.
     - composition_file: URL to the composition file of the membrane.
 
-    Methods:
-    - get_details(membrane): Returns the absolute URL for membrane details.
-
     Meta:
     - model: Associated model (MembraneTopol).
     - fields: List of fields to include in the JSON representation.
     """
     
-    details = SerializerMethodField(read_only=True)
+    details = UrlField(read_only=True, source='url')
     tags = SlugRelatedField(many=True, read_only=True, slug_field='tag')
     lipid_count = IntegerField(read_only=True, source='nb_lipids')
     forcefield = ForcefieldSerializer(read_only=True)
@@ -92,12 +62,6 @@ class MemListSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = MembraneTopol
         fields = [ 'details', 'name', 'tags', 'lipid_species_count', 'lipid_count', 'forcefield', 'membrane_file', 'composition_file' ]
-        
-    def get_details(self, membrane):
-        request = self.context.get('request')
-        url = reverse('api-memdetail', kwargs={'pk': membrane.id})
-        
-        return request.build_absolute_uri(url) if request is not None else url
 
 class LipidSerializer(HyperlinkedModelSerializer):
     """
@@ -107,25 +71,16 @@ class LipidSerializer(HyperlinkedModelSerializer):
     - name: Name of the lipid.
     - details: URL to detailed information about the lipid.
 
-    Methods:
-    - get_details(lipid): Returns the absolute URL for lipid details.
-
     Meta:
     - model: Associated model (Lipid).
     - fields: List of fields to include in the JSON representation.
     """
     
-    details = SerializerMethodField()
+    details = UrlField(read_only=True, source='url')
     
     class Meta:
         model = Lipid
         fields = [ 'name', 'details' ]
-        
-    def get_details(self, lipid):
-        request = self.context.get('request')
-        url = reverse('api-lipdetail', kwargs={'slug': lipid.slug})
-        
-        return request.build_absolute_uri(url) if request is not None else url
     
 class TopologySerializer(HyperlinkedModelSerializer):
     """
@@ -135,25 +90,16 @@ class TopologySerializer(HyperlinkedModelSerializer):
     - version: Version of the topology.
     - details: URL to detailed information about the topology.
 
-    Methods:
-    - get_details(topology): Returns the absolute URL for topology details.
-
     Meta:
     - model: Associated model (Topology).
     - fields: List of fields to include in the JSON representation.
     """
     
-    details = SerializerMethodField()
+    details = UrlField(read_only=True, source='url')
     
     class Meta:
         model = Topology
         fields = [ 'version', 'details' ]
-        
-    def get_details(self, topology):
-        request = self.context.get('request')
-        url = reverse('api-topdetail', kwargs={'pk': topology.id})
-        
-        return request.build_absolute_uri(url) if request is not None else url
 
 class TopolCompositionSerializer(HyperlinkedModelSerializer):
     """

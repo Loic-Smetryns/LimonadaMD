@@ -50,6 +50,9 @@ from django.utils.text import slugify
 from django.views.decorators.cache import never_cache
 from django.views.generic import DetailView
 
+# Django REST framework
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+
 # Django apps
 from forcefields.models import Forcefield, Software
 from limonada.functions import FileData, review_notification
@@ -59,7 +62,7 @@ from membranes.models import Membrane, MembraneTopol
 from .forms import TopCommentForm, LipidForm, LmidForm, SelectLipidForm, SelectTopologyForm, TopologyForm
 from .functions import findcgbonds, get_residues
 from .models import TopComment, Lipid, Topology, TopologyResidue, ResidueList
-
+from .serializers import TopolListSerializer, TopolDetailsSerializer
 
 def molsize(filename):
     mol = open('%s.mol' % filename).readlines()
@@ -786,3 +789,56 @@ class TopAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             qs = qs.filter(version__icontains=self.q)
         return qs
+
+"""
+    REST API
+"""
+
+class APITopolList(ListAPIView):
+    """
+    Retrieves a list of lipid topologies, sorted by forcefield and lipid ID in ascending order.
+
+    This endpoint provides essential information about each topology, including:\n
+    - **name**: The name of the topology.\n
+    - **details**: URL to access detailed information about the topology.\n
+    - **forcefield**: Detailed information about the force field used.\n
+    - **lipid**: Basic information about the associated lipid.\n
+    - **software**: Name of the software used to generate the topology.\n
+    - **gro_file**: URL to download the GRO coordinate file.\n
+    - **itp_file**: URL to download the ITP topology file.\n
+    """
+    
+    queryset = Topology.objects.all() \
+        .select_related('forcefield', 'lipid') \
+        .prefetch_related('forcefield__software') \
+        .order_by('forcefield', 'lipid__lmid')
+        
+    serializer_class = TopolListSerializer
+    
+    def get_view_name(self):
+        return "Topologies"
+    
+class APITopolDetails(RetrieveAPIView):
+    """
+    Retrieves detailed information about a specific lipid topology.
+
+    This endpoint provides comprehensive details about a topology, including:\n
+    - **name**: The name of the topology.\n
+    - **lipid**: Detailed information about the associated lipid.\n
+    - **forcefield**: Detailed information about the force field used.\n
+    - **software**: List of software names used to generate the topology.\n
+    - **version**: Version of the topology.\n
+    - **gro_file**: URL to download the GRO coordinate file.\n
+    - **itp_file**: URL to download the ITP topology file.\n
+    - **description**: Description of the topology.\n
+    - **references**: References related to the topology.\n
+    """
+    
+    queryset = Topology.objects.all() \
+        .select_related('lipid', 'forcefield') \
+        .prefetch_related('software', 'reference')
+        
+    serializer_class = TopolDetailsSerializer
+    
+    def get_view_name(self):
+        return "Topologie"

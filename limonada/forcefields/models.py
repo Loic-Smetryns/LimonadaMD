@@ -113,6 +113,10 @@ class Forcefield(models.Model):
 
     def get_absolute_url(self):
         return reverse('fflist')
+    
+    @property
+    def url(self):
+        return reverse('api-ffdetail', kwargs={'pk': self.id})
 
 
 @python_2_unicode_compatible

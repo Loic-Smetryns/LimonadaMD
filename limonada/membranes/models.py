@@ -33,7 +33,7 @@ from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.formats import localize
-from django.utils.text import slugify
+from django.urls import reverse
 
 # Django apps
 from limonada.functions import delete_file
@@ -132,6 +132,10 @@ class MembraneTopol(models.Model):
         if self.membrane is None:
             return 0
         return self.membrane.nb_liptypes
+    
+    @property
+    def url(self):
+        return reverse('api-memdetail', kwargs={'pk': self.id})
     
     # salt []
 

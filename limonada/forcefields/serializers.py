@@ -25,7 +25,27 @@ from django.urls import reverse
 from rest_framework.serializers import HyperlinkedModelSerializer, SerializerMethodField, SlugRelatedField, StringRelatedField
 
 from .models import Forcefield
-from homepage.serializers import ReferenceSerializer, FileField
+from homepage.serializers import ReferenceSerializer, FileField, UrlField
+
+class ForcefieldSerializer(HyperlinkedModelSerializer):
+    """
+    Serializer for the Forcefield model, converting instances to JSON representations.
+    Provides detailed information about force fields used in membrane simulations.
+
+    Fields:
+    - **name**: The name of the force field.
+    - **details**: URL to access detailed information about the force field.
+    
+    Meta:
+    - **model**: The model associated with this serializer (Forcefield).
+    - **fields**: List of fields to include in the JSON representation (name, details).
+    """
+    
+    details = UrlField(read_only=True, source='url')
+    
+    class Meta:
+        model = Forcefield
+        fields = [ 'name', 'details' ]
 
 class FfListSerializer(HyperlinkedModelSerializer):
     """
@@ -40,7 +60,6 @@ class FfListSerializer(HyperlinkedModelSerializer):
     - parameters_file: URL to download the molecular dynamics parameters file.
 
     Methods:
-    - get_details(forcefield): Returns absolute URL to access force field metadata details.
     - get_software(forcefield): Retrieves the name of the first software associated with the force field.
 
     Meta:
@@ -48,7 +67,7 @@ class FfListSerializer(HyperlinkedModelSerializer):
     - fields: List of exposed fields in the JSON representation.
     """
     
-    details = SerializerMethodField(read_only=True)
+    details = UrlField(read_only=True, source='url')
     software = SerializerMethodField(read_only=True)
     type = StringRelatedField(read_only=True, source='get_forcefield_type_display')
     forcefield_file = FileField(read_only=True, source='ff_file')
@@ -57,12 +76,6 @@ class FfListSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Forcefield
         fields = [ 'name', 'details', 'software', 'type', 'forcefield_file', 'parameters_file' ]
-        
-    def get_details(self, forcefield):
-        request = self.context.get('request')
-        url = reverse('api-ffdetail', kwargs={'pk': forcefield.id})
-        
-        return request.build_absolute_uri(url) if request is not None else url
     
     def get_software(self, forcefield):
         return forcefield.software.first().name

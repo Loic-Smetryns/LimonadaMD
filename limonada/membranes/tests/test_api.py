@@ -81,8 +81,7 @@ class ManyNullFieldAPIMemListTestCase(APITestCase):
         self.assertTrue('yeast pm1' in names)
         
         # check other fields
-        m1=None
-        m2=None
+        m1, m2=None, None
         
         m1=response.data['results'][0]
         m2=response.data['results'][1]

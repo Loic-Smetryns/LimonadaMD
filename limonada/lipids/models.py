@@ -232,11 +232,19 @@ class Lipid(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.lmid.lower())
+            self.slug = slugify(self.lmid.lower()) if self.lmid else (slugify(self.name) if self.name else str(self.id))
         super(Lipid, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('lipdetail', args=[str(self.slug)])
+    
+    @property
+    def formated_com_name(self):
+        return f"{self.name} - {self.com_name}" if self.com_name != '' else self.name
+    
+    @property
+    def url(self):
+        return reverse('api-lipdetail', kwargs={'slug': self.slug})
 
 
 @python_2_unicode_compatible
@@ -290,6 +298,14 @@ class Topology(models.Model):
 
     def get_absolute_url(self):
         return reverse('topdetail', args=[str(self.pk)])
+    
+    @property
+    def name(self):
+        return f"{self.version}_{self.lipid.name}"
+    
+    @property
+    def url(self):
+        return reverse('api-topdetail', kwargs={'pk': self.id})
 
 
 @python_2_unicode_compatible
