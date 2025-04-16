@@ -115,3 +115,59 @@ class TopolDetailsSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Topology
         fields = [ 'name', 'lipid', 'forcefield', 'software', 'version', 'gro_file', 'itp_file', 'description', 'references' ]
+        
+class LipidListSerializer(HyperlinkedModelSerializer):
+    """
+    Serializer for listing Lipid model instances, converting them to JSON representations.
+    Includes essential fields for lipid listings.
+
+    Fields:
+    - details: URL to detailed information about the lipid.
+    - lipid_maps_id: Lipid Maps ID of the lipid.
+    - common_name: Common name of the lipid.
+    - systematic_name: Systematic name of the lipid.
+
+    Meta:
+    - model: Associated model (Lipid).
+    - fields: List of fields to include in the JSON representation.
+    """
+    
+    details = UrlField(read_only=True, source='url')
+    lipid_maps_id = StringRelatedField(read_only=True, source='lmid')
+    common_name = StringRelatedField(read_only=True, source='com_name')
+    systematic_name = StringRelatedField(read_only=True, source='sys_name')
+    
+    class Meta:
+        model = Lipid
+        fields = [ 'name', 'details', 'lipid_maps_id', 'common_name', 'systematic_name' ]
+        
+class LipidDetailsSerializer(HyperlinkedModelSerializer):
+    """
+    Serializer for detailed representation of the Lipid model, providing comprehensive lipid details in JSON format.
+
+    Fields:
+    - lipid_maps_id: Lipid Maps ID of the lipid.
+    - common_name: Common name of the lipid.
+    - systematic_name: Systematic name of the lipid.
+    - category: Category of the lipid.
+    - class_lvl_4: Level 4 classification of the lipid.
+    - img: URL to the image of the lipid.
+
+    Meta:
+    - model: Associated model (Lipid).
+    - fields: List of fields to include in the JSON representation.
+    """
+    
+    lipid_maps_id = StringRelatedField(read_only=True, source='lmid')
+    common_name = StringRelatedField(read_only=True, source='com_name')
+    systematic_name = StringRelatedField(read_only=True, source='sys_name')
+    category = StringRelatedField(read_only=True, source='core')
+    class_lvl_4 = StringRelatedField(read_only=True, source='l4_class')
+    img = FileField(read_only=True)
+    
+    class Meta:
+        model = Lipid
+        fields = [ 
+            'name', 'lipid_maps_id', 'pubchem_cid', 'common_name', 'systematic_name', 'iupac_name',
+            'formula', 'category', 'main_class', 'sub_class', 'class_lvl_4', 'img'
+        ]

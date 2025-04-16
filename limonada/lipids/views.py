@@ -62,7 +62,7 @@ from membranes.models import Membrane, MembraneTopol
 from .forms import TopCommentForm, LipidForm, LmidForm, SelectLipidForm, SelectTopologyForm, TopologyForm
 from .functions import findcgbonds, get_residues
 from .models import TopComment, Lipid, Topology, TopologyResidue, ResidueList
-from .serializers import TopolListSerializer, TopolDetailsSerializer
+from .serializers import TopolListSerializer, TopolDetailsSerializer, LipidListSerializer, LipidDetailsSerializer
 
 def molsize(filename):
     mol = open('%s.mol' % filename).readlines()
@@ -842,3 +842,49 @@ class APITopolDetails(RetrieveAPIView):
     
     def get_view_name(self):
         return "Topologie"
+    
+class APILipidList(ListAPIView):
+    """
+    Retrieves a list of lipids, sorted by lipid ID in ascending order.
+
+    This endpoint provides essential information about each lipid, including:\n
+    - **name**: The name of the lipid.\n
+    - **details**: URL to access detailed information about the lipid.\n
+    - **lipid_maps_id**: The Lipid Maps ID of the lipid.\n
+    - **common_name**: The common name of the lipid.\n
+    - **systematic_name**: The systematic name of the lipid.\n
+    """
+    
+    queryset = Lipid.objects.all()
+        
+    serializer_class = LipidListSerializer
+    
+    def get_view_name(self):
+        return "Lipids"
+    
+class APILipidDetails(RetrieveAPIView):
+    """
+    Retrieves detailed information about a specific lipid.
+
+    This endpoint provides comprehensive details about a lipid, including:\n
+    - **name**: The name of the lipid.\n
+    - **lipid_maps_id**: The Lipid Maps ID of the lipid.\n
+    - **pubchem_cid**: The PubChem CID of the lipid.\n
+    - **common_name**: The common name of the lipid.\n
+    - **systematic_name**: The systematic name of the lipid.\n
+    - **iupac_name**: The IUPAC name of the lipid.\n
+    - **formula**: The chemical formula of the lipid.\n
+    - **category**: The category of the lipid.\n
+    - **main_class**: The main class of the lipid.\n
+    - **sub_class**: The subclass of the lipid.\n
+    - **class_lvl_4**: The level 4 classification of the lipid.\n
+    - **img**: URL to the image of the lipid.\n
+    """
+    
+    queryset = Lipid.objects.all()
+    
+    serializer_class = LipidDetailsSerializer
+    lookup_field = 'slug'
+    
+    def get_view_name(self):
+        return "Lipid"
