@@ -37,12 +37,19 @@ Including another URLconf
 
 # Django
 from django.conf import settings
+from django.urls import path, include as inc
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 
+# Django REST framework
+from rest_framework.schemas import get_schema_view
+
 # local Django
 from .views import bad_request_view, get_error, error_view, page_not_found_view, permission_denied_view
+from membranes.views import APIMemList, APIMemDetails
+from lipids.views import APILipidList, APILipidDetails, APITopolList, APITopolDetails
+from forcefields.views import APIFfList, APIFfDetails
 
 handler400 = bad_request_view.as_view()
 handler403 = permission_denied_view.as_view()
@@ -61,8 +68,38 @@ urlpatterns = [
     url(r'^', include('users.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+"""
+    URL API
+"""
+
+urlpatterns_api = [
+    url(r'^api/v1/membranes/$', APIMemList.as_view(), name="api-memlist"),
+    url(r'^api/v1/membranes/(?P<pk>\d+)/$', APIMemDetails.as_view(), name="api-memdetail"),
+    url(r'^api/v1/lipids/$', APILipidList.as_view(), name='api-liplist'),
+    url(r'^api/v1/lipids/(?P<slug>\w+)/$', APILipidDetails.as_view(), name='api-lipdetail'),
+    url(r'^api/v1/topologies/$', APITopolList.as_view(), name="api-toplist"),
+    url(r'^api/v1/topologies/(?P<pk>\d+)/$', APITopolDetails.as_view(), name="api-topdetail"),
+    url(r'^api/v1/forcefields/$', APIFfList.as_view(), name="api-fflist"),
+    url(r'^api/v1/forcefields/(?P<pk>\d+)/$', APIFfDetails.as_view(), name="api-ffdetail")
+]
+
+urlpatterns += urlpatterns_api + [
+    url(r'^api/v1/', get_schema_view(
+            title="Limonada REST API",
+            description=
+            "The Limonada REST API is a comprehensive web service designed to provide access to a rich "+
+            "dataset of molecular dynamics simulations, focusing on force fields, lipids, membranes, "+
+            "and topologies. This API is intended for researchers, scientists, and developers who need "+
+            "detailed and structured information for their simulations and analyses.",
+            version="1.0.0",
+            patterns=urlpatterns_api,
+        )
+    ),
+]
+
 if settings.DEBUG:
     import debug_toolbar
+    
     urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
+        url(r'^__debug__/', include('debug_toolbar.urls')),
     ] + urlpatterns

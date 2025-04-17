@@ -45,9 +45,4 @@ urlpatterns = [
     url(r'^topologies/(?P<pk>\d+)/update/$', TopUpdate, name='topupdate'),
     url(r'^topologies/(?P<pk>\d+)/delete/$', TopDelete, name='topdelete'),
     url(r'^topology-autocomplete/$', TopAutocomplete.as_view(), name='topology-autocomplete'),
-    
-    url(r'^lipids/api/v1/$', APILipidList.as_view(), name="api-liplist"),
-    url(r'^lipids/api/v1/(?P<slug>\w+)/$', APILipidDetails.as_view(), name="api-lipdetail"),
-    url(r'^topologies/api/v1/$', APITopolList.as_view(), name="api-toplist"),
-    url(r'^topologies/api/v1/(?P<pk>\d+)/$', APITopolDetails.as_view(), name='api-topdetail'),
 ]

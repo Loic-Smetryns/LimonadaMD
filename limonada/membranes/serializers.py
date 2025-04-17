@@ -47,13 +47,16 @@ class MemListSerializer(HyperlinkedModelSerializer):
     - membrane_file: URL to the membrane file.
     - composition_file: URL to the composition file of the membrane.
 
+    Methods:
+    - get_tags(membrane): Retrieves a list of tags associated with the membrane.
+
     Meta:
     - model: Associated model (MembraneTopol).
     - fields: List of fields to include in the JSON representation.
     """
     
     details = UrlField(read_only=True, source='url')
-    tags = SlugRelatedField(many=True, read_only=True, slug_field='tag')
+    tags = SerializerMethodField(read_only=True)
     lipid_count = IntegerField(read_only=True, source='nb_lipids')
     forcefield = ForcefieldSerializer(read_only=True)
     membrane_file = FileField(read_only=True, source='mem_file')
@@ -62,6 +65,10 @@ class MemListSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = MembraneTopol
         fields = [ 'details', 'name', 'tags', 'lipid_species_count', 'lipid_count', 'forcefield', 'membrane_file', 'composition_file' ]
+        
+    def get_tags(self, membrane):
+        return [] if membrane.membrane == None else [tag.tag for tag in membrane.membrane.tag.all()]
+        
 
 class LipidSerializer(HyperlinkedModelSerializer):
     """
@@ -184,9 +191,17 @@ class MemDetailsSerializer(HyperlinkedModelSerializer):
         ]
     
     def get_lipids(self, membrane):
-        compositions = membrane.topolcomposition_set.select_related('lipid', 'topology').all()
+        compositions = getattr(membrane, 'prefetched_compositions', None)
+        if compositions is None:
+            compositions = membrane.topolcomposition_set.select_related('lipid').all()
+        
         unique_lipids = {comp.lipid for comp in compositions if comp.lipid}
-        return LipidSerializer(unique_lipids, many=True, context=self.context).data
+        
+        return LipidSerializer(
+            unique_lipids, 
+            many=True, 
+            context=self.context
+        ).data
     
     def get_simulation_files(self, membrane):
         request = self.context.get('request')
@@ -195,7 +210,8 @@ class MemDetailsSerializer(HyperlinkedModelSerializer):
         return request.build_absolute_uri(url) if request is not None else url
     
     def get_composition(self, membrane):
-        topol_composition = membrane.topolcomposition_set.all().order_by('-number')
+        topol_composition = getattr(membrane, 'prefetched_compositions', membrane.topolcomposition_set.all())
+        topol_composition = sorted(topol_composition, key=lambda x: -x.number)
         
         composition = defaultdict(list)
         total_numbers = defaultdict(int)

@@ -81,20 +81,20 @@ class ManyNullFieldAPITopolListTestCase(APITestCase):
         if response.data['results'][1]['name'] == '2.0_LipidTest':
             t1, t2 = t2, t1
             
-        self.assertEqual(t1['details'], 'http://testserver/topologies/api/v1/1/')
+        self.assertEqual(t1['details'], 'http://testserver/api/v1/topologies/1/')
         self.assertEqual(t1['forcefield']['name'], 'ForceFieldTest')
-        self.assertEqual(t1['forcefield']['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(t1['forcefield']['details'], 'http://testserver/api/v1/forcefields/1/')
         self.assertEqual(t1['lipid']['name'], 'DMDG')
-        self.assertEqual(t1['lipid']['details'], 'http://testserver/lipids/api/v1/ltest/')
+        self.assertEqual(t1['lipid']['details'], 'http://testserver/api/v1/lipids/ltest/')
         self.assertEqual(t1['software'], '')
         self.assertEqual(t1['gro_file'], '')
         self.assertEqual(t1['itp_file'], '')
         
-        self.assertEqual(t2['details'], 'http://testserver/topologies/api/v1/2/')
+        self.assertEqual(t2['details'], 'http://testserver/api/v1/topologies/2/')
         self.assertEqual(t2['forcefield']['name'], 'ForceFieldTest')
-        self.assertEqual(t2['forcefield']['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(t2['forcefield']['details'], 'http://testserver/api/v1/forcefields/1/')
         self.assertEqual(t2['lipid']['name'], 'DMDG')
-        self.assertEqual(t2['lipid']['details'], 'http://testserver/lipids/api/v1/ltest/')
+        self.assertEqual(t2['lipid']['details'], 'http://testserver/api/v1/lipids/ltest/')
         self.assertEqual(t2['software'], '')
         self.assertEqual(t2['gro_file'], '')
         self.assertEqual(t2['itp_file'], '')
@@ -153,12 +153,12 @@ class FilledFieldAPITopolListTestCase(APITestCase):
         topol = response.data['results'][0]
         
         self.assertTrue(topol['name'])
-        self.assertTrue(topol['details'].startswith('http://testserver/topologies/api/v1/'))
+        self.assertTrue(topol['details'].startswith('http://testserver/api/v1/topologies/'))
         
         self.assertEqual(topol['forcefield']['name'], 'Test FF')
-        self.assertTrue(topol['forcefield']['details'].startswith('http://testserver/forcefields/api/v1/'))
+        self.assertTrue(topol['forcefield']['details'].startswith('http://testserver/api/v1/forcefields/'))
         self.assertEqual(topol['lipid']['name'], 'POPCName - POPC')
-        self.assertTrue(topol['lipid']['details'].startswith('http://testserver/lipids/api/v1/'))
+        self.assertTrue(topol['lipid']['details'].startswith('http://testserver/api/v1/lipids/'))
         self.assertEqual(topol['software'], 'Gromacs')
         self.assertEqual(topol['gro_file'], 'http://testserver/media/topologies/popc.gro')
         self.assertEqual(topol['itp_file'], 'http://testserver/media/topologies/popc.itp')
@@ -210,10 +210,10 @@ class ManyNullFieldAPITopolDetailTestCase(APITestCase):
         self.assertEqual(response.data['description'], '')
     
         self.assertEqual(response.data['forcefield']['name'], 'ForceFieldTest')
-        self.assertEqual(response.data['forcefield']['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(response.data['forcefield']['details'], 'http://testserver/api/v1/forcefields/1/')
         
         self.assertEqual(response.data['lipid']['name'], 'DMDG')
-        self.assertEqual(response.data['lipid']['details'], 'http://testserver/lipids/api/v1/ltest/')
+        self.assertEqual(response.data['lipid']['details'], 'http://testserver/api/v1/lipids/ltest/')
         
         self.assertEqual(response.data['software'], [])
         self.assertEqual(response.data['references'], [])
@@ -272,8 +272,8 @@ class FilledFieldAPITopolDetailTestCase(APITestCase):
         self.assertEqual(response.data['itp_file'], 'http://testserver/media/topologies/popc.itp')
         self.assertEqual(response.data['description'], 'Topology for POPC')
         self.assertEqual(response.data['forcefield']['name'], 'Test FF')
-        self.assertEqual(response.data['forcefield']['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(response.data['forcefield']['details'], 'http://testserver/api/v1/forcefields/1/')
         self.assertEqual(response.data['lipid']['name'], 'POPCName - POPC')
-        self.assertTrue(response.data['lipid']['details'].startswith('http://testserver/lipids/api/v1/'))
+        self.assertTrue(response.data['lipid']['details'].startswith('http://testserver/api/v1/lipids/'))
         self.assertEqual(response.data['software'], ['Gromacs 2020'])
         self.assertEqual(response.data['references'], [])

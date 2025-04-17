@@ -212,8 +212,7 @@ class Membrane(models.Model):
 @python_2_unicode_compatible
 class MembraneTag(models.Model):
 
-    tag = models.CharField(max_length=30,
-                           unique=True)
+    tag = models.CharField(max_length=30, unique=True)
 
     def __str__(self):
         return self.tag

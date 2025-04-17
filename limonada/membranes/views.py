@@ -51,6 +51,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.urls import reverse
 from django.db import IntegrityError, transaction
 from django.db.models import Q
+from django.db.models import Prefetch
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
@@ -1181,7 +1182,15 @@ class APIMemDetails(RetrieveAPIView):
     
     queryset = MembraneTopol.objects.all() \
         .select_related('membrane', 'software', 'forcefield', 'curator') \
-        .prefetch_related('membrane__tag', 'prot', 'reference', 'doi', 'topolcomposition_set')
+        .prefetch_related(
+            'prot',
+            'reference',
+            Prefetch(
+                'topolcomposition_set', 
+                queryset=TopolComposition.objects.select_related('lipid', 'topology'),
+                to_attr='prefetched_compositions'
+            ),
+        )
     
     serializer_class = MemDetailsSerializer
     

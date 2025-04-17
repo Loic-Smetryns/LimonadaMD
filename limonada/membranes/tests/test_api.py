@@ -89,23 +89,23 @@ class ManyNullFieldAPIMemListTestCase(APITestCase):
         if m1['name'] == 'yeast pm1':
             m1, m2 = m2, m1
         
-        self.assertEqual(m1['details'], 'http://testserver/membranes/api/v1/1/')
+        self.assertEqual(m1['details'], 'http://testserver/api/v1/membranes/1/')
         self.assertEqual(m1['membrane_file'], '')
         self.assertEqual(m1['composition_file'], '')
         self.assertEqual(m1['tags'], [])
         self.assertEqual(m1['lipid_species_count'], 0)
         self.assertEqual(m1['lipid_count'], 0)
         self.assertEqual(m1['forcefield']['name'], '')
-        self.assertEqual(m1['forcefield']['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(m1['forcefield']['details'], 'http://testserver/api/v1/forcefields/1/')
         
-        self.assertEqual(m2['details'], 'http://testserver/membranes/api/v1/2/')
+        self.assertEqual(m2['details'], 'http://testserver/api/v1/membranes/2/')
         self.assertEqual(m2['membrane_file'], '')
         self.assertEqual(m2['composition_file'], '')
         self.assertEqual(m2['tags'], [])
         self.assertEqual(m2['lipid_species_count'], 0)
         self.assertEqual(m2['lipid_count'], 0)
         self.assertEqual(m2['forcefield']['name'], '')
-        self.assertEqual(m2['forcefield']['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(m2['forcefield']['details'], 'http://testserver/api/v1/forcefields/1/')
         
 class FilledFieldAPIMemListTestCase(APITestCase):
     
@@ -159,7 +159,7 @@ class FilledFieldAPIMemListTestCase(APITestCase):
         m = response.data['results'][0]
         
         self.assertEqual(m['name'], 'mammalian plasma membrane')
-        self.assertEqual(m['details'], 'http://testserver/membranes/api/v1/1/')
+        self.assertEqual(m['details'], 'http://testserver/api/v1/membranes/1/')
         
         self.assertEqual(len(m['tags']), 2)
         self.assertTrue('mammalian' in m['tags'])
@@ -169,7 +169,7 @@ class FilledFieldAPIMemListTestCase(APITestCase):
         self.assertEqual(m['lipid_count'], 6664)
         
         self.assertEqual(m['forcefield']['name'], 'martini 2.0')
-        self.assertEqual(m['forcefield']['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(m['forcefield']['details'], 'http://testserver/api/v1/forcefields/1/')
         
         self.assertEqual(m['membrane_file'], "http://testserver/media/membranes/fake.gro")
         self.assertEqual(m['composition_file'], "http://testserver/media/membranes/fake.txt")
@@ -235,7 +235,7 @@ class ManyNullFieldAPIMemDetailTestCase(APITestCase):
         self.assertEqual(m['lipid_species_count'], 0)
         self.assertEqual(m['lipids'], [])
         self.assertEqual(m['forcefield']['name'], '')
-        self.assertEqual(m['forcefield']['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(m['forcefield']['details'], 'http://testserver/api/v1/forcefields/1/')
         self.assertEqual(m['software'], '')
         self.assertEqual(m['membrane_file'], '')
         self.assertEqual(m['composition_file'], '')
@@ -324,12 +324,12 @@ class FilledFieldAPIMemDetailTestCase(APITestCase):
         (lip1, lip2) = (m['lipids'][0], m['lipids'][1]) if m['lipids'][0]['name'] == 'POI6' else (m['lipids'][1], m['lipids'][0])
         
         self.assertEqual(lip1['name'], 'POI6')
-        self.assertEqual(lip1['details'], 'http://testserver/lipids/api/v1/ligp08010001/')
+        self.assertEqual(lip1['details'], 'http://testserver/api/v1/lipids/ligp08010001/')
         self.assertEqual(lip2['name'], 'POI7')
-        self.assertEqual(lip2['details'], 'http://testserver/lipids/api/v1/ligp09010001/')
+        self.assertEqual(lip2['details'], 'http://testserver/api/v1/lipids/ligp09010001/')
         
         self.assertEqual(m['forcefield']['name'], 'martini 2.0')
-        self.assertEqual(m['forcefield']['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(m['forcefield']['details'], 'http://testserver/api/v1/forcefields/1/')
         self.assertEqual(m['software'], 'Gromacs 4.5')
         self.assertEqual(m['membrane_file'], 'http://testserver/media/membranes/fake.gro')
         self.assertEqual(m['composition_file'], 'http://testserver/media/membranes/fake.txt')
@@ -348,13 +348,13 @@ class FilledFieldAPIMemDetailTestCase(APITestCase):
         self.assertEqual(upper[0]['count'], 3)
         self.assertEqual(upper[0]['proportion'], 100.0)
         self.assertEqual(upper[0]['lipid']['name'], 'POI6')
-        self.assertEqual(upper[0]['lipid']['details'], 'http://testserver/lipids/api/v1/ligp08010001/')
+        self.assertEqual(upper[0]['lipid']['details'], 'http://testserver/api/v1/lipids/ligp08010001/')
         self.assertEqual(upper[0]['topology']['version'], 'Klauda2010')
-        self.assertEqual(upper[0]['topology']['details'], 'http://testserver/topologies/api/v1/1/')
+        self.assertEqual(upper[0]['topology']['details'], 'http://testserver/api/v1/topologies/1/')
         
         self.assertEqual(lower[0]['count'], 90)
         self.assertEqual(lower[0]['proportion'], 100.0)
         self.assertEqual(lower[0]['lipid']['name'], 'POI7')
-        self.assertEqual(lower[0]['lipid']['details'], 'http://testserver/lipids/api/v1/ligp09010001/')
+        self.assertEqual(lower[0]['lipid']['details'], 'http://testserver/api/v1/lipids/ligp09010001/')
         self.assertEqual(lower[0]['topology']['version'], 'Klauda2010')
-        self.assertEqual(lower[0]['topology']['details'], 'http://testserver/topologies/api/v1/2/')
+        self.assertEqual(lower[0]['topology']['details'], 'http://testserver/api/v1/topologies/2/')

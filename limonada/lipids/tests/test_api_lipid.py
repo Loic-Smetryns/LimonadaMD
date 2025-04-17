@@ -49,12 +49,12 @@ class ManyNullFieldAPILipidListTestCase(APITestCase):
         if response.data['results'][1]['name'] == 'DMDG':
             l1, l2 = l2, l1
 
-        self.assertEqual(l1['details'], 'http://testserver/lipids/api/v1/ltest1/')
+        self.assertEqual(l1['details'], 'http://testserver/api/v1/lipids/ltest1/')
         self.assertEqual(l1['lipid_maps_id'], 'LTEST1')
         self.assertEqual(l1['common_name'], 'A')
         self.assertEqual(l1['systematic_name'], '')
 
-        self.assertEqual(l2['details'], 'http://testserver/lipids/api/v1/ltest2/')
+        self.assertEqual(l2['details'], 'http://testserver/api/v1/lipids/ltest2/')
         self.assertEqual(l2['lipid_maps_id'], 'LTEST2')
         self.assertEqual(l2['common_name'], 'B')
         self.assertEqual(l2['systematic_name'], '')
@@ -94,7 +94,7 @@ class FilledFieldAPILipidListTestCase(APITestCase):
         lipid = response.data['results'][0]
 
         self.assertTrue(lipid['name'])
-        self.assertTrue(lipid['details'].startswith('http://testserver/lipids/api/v1/'))
+        self.assertTrue(lipid['details'].startswith('http://testserver/api/v1/lipids/'))
         self.assertEqual(lipid['lipid_maps_id'], 'POP1')
         self.assertEqual(lipid['common_name'], 'POPC')
         self.assertEqual(lipid['systematic_name'], 'Systematic Name')

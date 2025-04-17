@@ -49,7 +49,4 @@ urlpatterns = [
         name='membranetagautocomplete'),
     url(r'^getliptops/$', GetLipTops, name='getliptops'),
     url(r'^getfiles/$', GetFiles, name='getfiles'),
-    
-    url(r'^membranes/api/v1/$', APIMemList.as_view(), name="api-memlist"),
-    url(r'^membranes/api/v1/(?P<pk>\d+)/$', APIMemDetails.as_view(), name="api-memdetail")
 ]

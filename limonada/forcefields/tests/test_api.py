@@ -69,7 +69,7 @@ class ManyNullFieldAPIFfListTestCase(APITestCase):
         ff_data = response.data['results'][0]
 
         self.assertEqual(ff_data['name'], 'Test FF')
-        self.assertEqual(ff_data['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(ff_data['details'], 'http://testserver/api/v1/forcefields/1/')
         self.assertEqual(ff_data['software'], 'Gromacs')
         self.assertEqual(ff_data['type'], 'All atom')
         self.assertEqual(ff_data['forcefield_file'], '')
@@ -127,7 +127,7 @@ class FilledFieldAPIFfListTestCase(APITestCase):
         ff_data = response.data['results'][0]
 
         self.assertEqual(ff_data['name'], 'Test FF')
-        self.assertEqual(ff_data['details'], 'http://testserver/forcefields/api/v1/1/')
+        self.assertEqual(ff_data['details'], 'http://testserver/api/v1/forcefields/1/')
         self.assertEqual(ff_data['software'], 'Gromacs')
         self.assertEqual(ff_data['type'], 'Coarse grained')
         self.assertEqual(ff_data['forcefield_file'], 'http://testserver/media/forcefields/Gromacs/Charmm27.ff.zip')
