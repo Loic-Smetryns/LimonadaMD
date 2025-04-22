@@ -111,7 +111,7 @@ class FilledFieldAPITopolListTestCase(APITestCase):
         forcefield = Forcefield.objects.create(id=1, curator=user, name='Test FF')
         forcefield.software.add(software)
         
-        lipid = Lipid.objects.create(name='POPCName', com_name='POPC', lmid='POP1', curator=user)
+        lipid = Lipid.objects.create(name='POPC', com_name='POPC', lmid='POP1', curator=user)
         
         topol = Topology.objects.create(
             id=1,
@@ -157,7 +157,7 @@ class FilledFieldAPITopolListTestCase(APITestCase):
         
         self.assertEqual(topol['forcefield']['name'], 'Test FF')
         self.assertTrue(topol['forcefield']['details'].startswith('http://testserver/api/v1/forcefields/'))
-        self.assertEqual(topol['lipid']['name'], 'POPCName - POPC')
+        self.assertEqual(topol['lipid']['name'], 'POPC - POPC')
         self.assertTrue(topol['lipid']['details'].startswith('http://testserver/api/v1/lipids/'))
         self.assertEqual(topol['software'], 'Gromacs')
         self.assertEqual(topol['gro_file'], 'http://testserver/media/topologies/popc.gro')
@@ -230,7 +230,7 @@ class FilledFieldAPITopolDetailTestCase(APITestCase):
         forcefield = Forcefield.objects.create(id=1, curator=user, name='Test FF')
         forcefield.software.add(software)
         
-        lipid = Lipid.objects.create(name='POPCName', com_name='POPC', lmid='pop1', curator=user)
+        lipid = Lipid.objects.create(name='POPC', com_name='POPC', lmid='pop1', curator=user)
         
         topol = Topology.objects.create(
             id=1,
@@ -266,14 +266,14 @@ class FilledFieldAPITopolDetailTestCase(APITestCase):
         self.assertEqual(set(response.data.keys()), expected_keys)
         
         # check other fields
-        self.assertEqual(response.data['name'], 'v1.0_POPCName')
+        self.assertEqual(response.data['name'], 'v1.0_POPC')
         self.assertEqual(response.data['version'], 'v1.0')
         self.assertEqual(response.data['gro_file'], 'http://testserver/media/topologies/popc.gro')
         self.assertEqual(response.data['itp_file'], 'http://testserver/media/topologies/popc.itp')
         self.assertEqual(response.data['description'], 'Topology for POPC')
         self.assertEqual(response.data['forcefield']['name'], 'Test FF')
         self.assertEqual(response.data['forcefield']['details'], 'http://testserver/api/v1/forcefields/1/')
-        self.assertEqual(response.data['lipid']['name'], 'POPCName - POPC')
+        self.assertEqual(response.data['lipid']['name'], 'POPC - POPC')
         self.assertTrue(response.data['lipid']['details'].startswith('http://testserver/api/v1/lipids/'))
         self.assertEqual(response.data['software'], ['Gromacs 2020'])
         self.assertEqual(response.data['references'], [])

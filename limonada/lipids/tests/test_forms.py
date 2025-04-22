@@ -82,10 +82,10 @@ class TopologyFormTest(TestCase):
         url = 'http://limonada.univ-reims.fr/media/forcefields/Gromacs/martini_2.0.ff.zip'
         TopologyFormTest.forcefield_file = TopologyFormTest._create_file('ZIP', url)
         # Required database entries are created before running tests
-        User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
-        Forcefield.objects.create(name='martini 2.0', curator=User.objects.get(id=1))
+        User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword', id=1)
+        Forcefield.objects.create(name='martini 2.0', curator=User.objects.get(id=1), id=1)
         Lipid.objects.create(name='POPC', lmid='LMGP01010005', com_name='PC(16:0/18:1(9Z))',
-            curator=User.objects.get(id=1))
+            curator=User.objects.get(id=1), id=1)
         Topology.objects.create(lipid=Lipid.objects.get(id=1), version='Wassenaar2015',
             forcefield=Forcefield.objects.get(id=1), curator=User.objects.get(id=1))
 

@@ -855,7 +855,7 @@ class APILipidList(ListAPIView):
     - **systematic_name**: The systematic name of the lipid.\n
     """
     
-    queryset = Lipid.objects.all()
+    queryset = Lipid.objects.all().order_by('pk')
         
     serializer_class = LipidListSerializer
     

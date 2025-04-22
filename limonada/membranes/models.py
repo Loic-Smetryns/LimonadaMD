@@ -198,7 +198,7 @@ class MembraneDoi(models.Model):
 @python_2_unicode_compatible
 class Membrane(models.Model):
 
-    name = models.TextField(unique=True, null=True, blank=True)
+    name = models.CharField(max_length=100, unique=True)
     lipids = models.ManyToManyField('lipids.Lipid',
                                     through='Composition')
     tag = models.ManyToManyField('membranes.MembraneTag',

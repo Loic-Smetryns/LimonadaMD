@@ -67,7 +67,7 @@ class FilledFieldAPILipidListTestCase(APITestCase):
         )
 
         Lipid.objects.create(
-            name='POPCName', com_name='POPC', lmid='POP1', sys_name='Systematic Name', curator=user
+            name='POPC', com_name='POPC', lmid='POP1', sys_name='Systematic Name', curator=user
         )
 
     def tearDown(self):
@@ -148,7 +148,7 @@ class FilledFieldAPILipidDetailTestCase(APITestCase):
         )
 
         Lipid.objects.create(
-            name='POPCName', com_name='POPC', lmid='pop1', sys_name='Systematic Name',
+            name='POPC', com_name='POPC', lmid='pop1', sys_name='Systematic Name',
             iupac_name='IUPAC Name', formula='C42H82NO8P', core='Category',
             main_class='Main Class', sub_class='Sub Class', l4_class='Class Lvl 4',
             pubchem_cid='12345', img='lipids/popc.png', curator=user
@@ -173,7 +173,7 @@ class FilledFieldAPILipidDetailTestCase(APITestCase):
         self.assertEqual(set(response.data.keys()), expected_keys)
 
         # check other fields
-        self.assertEqual(response.data['name'], 'POPCName')
+        self.assertEqual(response.data['name'], 'POPC')
         self.assertEqual(response.data['lipid_maps_id'], 'pop1')
         self.assertEqual(response.data['pubchem_cid'], '12345')
         self.assertEqual(response.data['common_name'], 'POPC')

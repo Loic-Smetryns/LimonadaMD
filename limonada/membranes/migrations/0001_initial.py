@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
             name='Membrane',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField(blank=True, null=True, unique=True)),
+                ('name', models.CharField(max_length=100, unique=True)),
                 ('nb_liptypes', models.PositiveIntegerField(null=True)),
                 ('lipids', models.ManyToManyField(through='membranes.Composition', to='lipids.Lipid')),
             ],

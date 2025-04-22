@@ -84,7 +84,7 @@ urlpatterns_api = [
 ]
 
 urlpatterns += urlpatterns_api + [
-    url(r'^api/v1/', get_schema_view(
+    url(r'^api/v1/$', get_schema_view(
             title="Limonada REST API",
             description=
             "The Limonada REST API is a comprehensive web service designed to provide access to a rich "+

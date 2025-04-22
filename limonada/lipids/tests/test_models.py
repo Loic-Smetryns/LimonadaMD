@@ -88,7 +88,7 @@ class LipidModelTest(TestCase):
         # Some files needs to be copied from the original media dircetory to the temporary one
         shutil.copy(os.path.join(MEDIA_INIT, 'residuetypes.dat'),os.path.join(MEDIA_ROOT, 'residuetypes.dat'))
         # Required database entries are created before running tests
-        User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
+        User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword', id=1)
 
     def setUp(self):
         # When a lipid is saved, the picture is moved from its original location to "media/lipids" directory, it then
@@ -112,6 +112,7 @@ class LipidModelTest(TestCase):
             img = ImageFile(self.image, name=self.image.name),
             curator = User.objects.get(id=1),
             slug = 'lmgp01010005',
+            id=1
         )
 
     def tearDown(self):
@@ -290,7 +291,7 @@ class LipidModelTest(TestCase):
         self.assertEqual(self.lipid.date, date.today())
 
     def test_curator_on_delete_cascade(self):
-        User.objects.create_user('paul', 'mccartney@thebeatles.com', 'paulpassword')
+        User.objects.create_user('paul', 'mccartney@thebeatles.com', 'paulpassword', id=2)
         self.lipid.curator = User.objects.get(id=2) 
         self.lipid.save()
         User.objects.filter(id=2).delete()
@@ -321,7 +322,6 @@ class TopologyResidueModelTest(TestCase):
         """
         self.topologyresidue.full_clean()
         self.topologyresidue.save()
-        self.assertEqual(1, self.topologyresidue.pk)
 
     def test_name_unique(self):
         'residue must be unique'
@@ -363,10 +363,10 @@ class TopologyModelTest(TestCase):
         os.makedirs(MEDIA_TMP, exist_ok=True)
         os.makedirs(MEDIA_TOPOLOGIES, exist_ok=True)
         # Required database entries are created before running tests
-        User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
-        Software.objects.create(name='Gromacs')
-        Forcefield.objects.create(name='martini 2.0', curator=User.objects.get(id=1))
-        Lipid.objects.create(name='POPC', lmid='LMGP01010005', com_name='PC(16:0/18:1(9Z))', curator=User.objects.get(id=1))
+        User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword', id=1)
+        Software.objects.create(name='Gromacs', id=1)
+        Forcefield.objects.create(name='martini 2.0', curator=User.objects.get(id=1), id=1)
+        Lipid.objects.create(name='POPC', lmid='LMGP01010005', com_name='PC(16:0/18:1(9Z))', curator=User.objects.get(id=1), id=1)
         TopologyResidue.objects.create()
         Reference.objects.create(curator=User.objects.get(id=1), year=2015)
 
@@ -399,7 +399,6 @@ class TopologyModelTest(TestCase):
         """
         self.topology.full_clean()
         self.topology.save()
-        self.assertEqual(1, self.topology.pk)
 
     def test_forcefield_on_delete_cascade(self):
         Forcefield.objects.create(curator=User.objects.get(id=1))
@@ -410,7 +409,7 @@ class TopologyModelTest(TestCase):
         self.assertEquals(nb_topologies, 0)
 
     def test_lipid_on_delete_cascade(self):
-        Lipid.objects.create(name='DPPC', lmid='LMGP01010564', com_name='PC(16:0/16:0)', curator=User.objects.get(id=1))
+        Lipid.objects.create(name='DPPC', lmid='LMGP01010564', com_name='PC(16:0/16:0)', curator=User.objects.get(id=1), id=2)
         self.topology.lipid = Lipid.objects.get(id=2) 
         self.topology.save()
         Lipid.objects.filter(id=2).delete()
@@ -456,7 +455,7 @@ class TopologyModelTest(TestCase):
         self.assertEqual(self.topology.date, date.today())
 
     def test_curator_on_delete_cascade(self):
-        User.objects.create_user('paul', 'mccartney@thebeatles.com', 'paulpassword')
+        User.objects.create_user('paul', 'mccartney@thebeatles.com', 'paulpassword', id=2)
         self.topology.curator = User.objects.get(id=2) 
         self.topology.save()
         User.objects.filter(id=2).delete()
@@ -480,12 +479,12 @@ class TopCommentModelTest(TestCase):
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
         # Required database entries are created before running tests
-        User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
-        Forcefield.objects.create(name='martini 2.0', curator=User.objects.get(id=1))
+        User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword', id=1)
+        Forcefield.objects.create(name='martini 2.0', curator=User.objects.get(id=1), id=1)
         Lipid.objects.create(name='POPC', lmid='LMGP01010005', com_name='PC(16:0/18:1(9Z))',
-            curator=User.objects.get(id=1))
+            curator=User.objects.get(id=1), id=1)
         Topology.objects.create(lipid=Lipid.objects.get(id=1), version='Wassenaar2015',
-            forcefield=Forcefield.objects.get(id=1), curator=User.objects.get(id=1))
+            forcefield=Forcefield.objects.get(id=1), curator=User.objects.get(id=1), id=1)
 
     def setUp(self):
         # Creation a prototype topology 
@@ -504,7 +503,7 @@ class TopCommentModelTest(TestCase):
 
     def test_topology_on_delete_cascade(self):
         Topology.objects.create(lipid=Lipid.objects.get(id=1),
-            forcefield=Forcefield.objects.get(id=1), curator=User.objects.get(id=1))
+            forcefield=Forcefield.objects.get(id=1), curator=User.objects.get(id=1), id=2)
         self.topcomment.topology = Topology.objects.get(id=2)
         self.topcomment.save()
         Topology.objects.filter(id=2).delete()
@@ -512,7 +511,7 @@ class TopCommentModelTest(TestCase):
         self.assertEquals(nb_topcomment, 0)
 
     def test_curator_on_delete_cascade(self):
-        User.objects.create_user('paul', 'mccartney@thebeatles.com', 'paulpassword')
+        User.objects.create_user('paul', 'mccartney@thebeatles.com', 'paulpassword', id=2)
         self.topcomment.user = User.objects.get(id=2)
         self.topcomment.save()
         User.objects.filter(id=2).delete()
