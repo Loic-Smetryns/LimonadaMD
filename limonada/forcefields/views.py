@@ -40,6 +40,7 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
+from django.db.models import Prefetch
 
 # Django REST framework
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -307,7 +308,10 @@ class APIFfList(ListAPIView):
     - **parameters_file**: URL to download the molecular dynamics parameters file.\n
     """
     
-    queryset = Forcefield.objects.all().order_by('name')
+    queryset = Forcefield.objects.all().order_by('name').prefetch_related(
+        Prefetch('software', queryset=Software.objects.all(), to_attr='prefetched_softwares'
+    )
+)
         
     serializer_class = FfListSerializer
     

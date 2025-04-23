@@ -78,7 +78,7 @@ class FfListSerializer(HyperlinkedModelSerializer):
         fields = [ 'name', 'details', 'software', 'type', 'forcefield_file', 'parameters_file' ]
     
     def get_software(self, forcefield):
-        return forcefield.software.first().name
+        return "" if getattr(forcefield, 'prefetched_softwares', None) == None else forcefield.prefetched_softwares[0].name
     
 class FfDetailsSerialize(HyperlinkedModelSerializer):
     """

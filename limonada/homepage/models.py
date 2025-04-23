@@ -96,8 +96,7 @@ class AuthorsList(models.Model):
 @python_2_unicode_compatible
 class Author(models.Model):
 
-    fullname = models.CharField(max_length=100,
-                                unique=True)
+    fullname = models.CharField(max_length=100)
     given = models.CharField(max_length=50)
     familly = models.CharField(max_length=50)
     curator = models.ForeignKey(User,

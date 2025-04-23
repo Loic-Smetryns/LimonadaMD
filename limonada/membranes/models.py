@@ -121,6 +121,9 @@ class MembraneTopol(models.Model):
     doi = models.ManyToManyField('membranes.MembraneDoi',  # This file is used to add doi link for Zenodo
                                  blank=True)
     
+    num_version = models.PositiveSmallIntegerField(null=False, default=0)
+    membranetopology_id_old = models.PositiveSmallIntegerField(null=True)
+    
     @property
     def tags(self):
         if self.membrane is None:

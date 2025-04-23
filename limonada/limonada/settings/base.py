@@ -129,7 +129,7 @@ WSGI_APPLICATION = 'limonada.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'limonada',
+        'NAME': 'limonada_db',
         'USER': 'root',
         'PASSWORD': 'password',
         'HOST': 'localhost',
