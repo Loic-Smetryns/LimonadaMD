@@ -26,7 +26,7 @@ from django.conf.urls import url
 from .forms import MemFormSet
 from .views import (GetFiles, GetLipTops, MembraneTopolAutocomplete, MembraneAutocomplete,
                     MembraneProtAutocomplete, MembraneDoiAutocomplete,
-                    MembraneTagAutocomplete, MemCreate, MemDelete, MemDetail, MemList, MemUpdate,
+                    MembraneTagAutocomplete, MemCreate, MemDelete, MemDetail, MemList, MemUpdate, MemNewVersion,
                     APIMemList, APIMemDetails)
 
 urlpatterns = [
@@ -35,6 +35,7 @@ urlpatterns = [
         name='memcreate'),
     url(r'^membranes/(?P<pk>\d+)/$', MemDetail, name='memdetail'),
     url(r'^membranes/(?P<pk>\d+)/update/$', MemUpdate, name='memupdate'),
+    url(r'^membranes/(?P<pk>\d+)/new_version/$', MemNewVersion, name='mem-new-version'),
     url(r'^membranes/(?P<pk>\d+)/delete/$', MemDelete, name='memdelete'),
     url(r'^membranetopol-autocomplete/$', MembraneTopolAutocomplete.as_view(), name='membranetopol-autocomplete'),
     url(r'^membrane-autocomplete/$', MembraneAutocomplete.as_view(), name='membrane-autocomplete'),

@@ -55,6 +55,7 @@ from django.db.models import Prefetch
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST
 
 # Django REST framework
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -93,7 +94,7 @@ def cd(newdir):
 @never_cache
 def MemList(request):
 
-    mem_list = MembraneTopol.objects.all().order_by('-membrane__nb_liptypes')
+    mem_list = MembraneTopol.objects.all().filter(version=1).order_by('-membrane__nb_liptypes')
 
     params = request.GET.copy()
 
@@ -518,6 +519,18 @@ def MemCreate(request, formset_class, template):
         'memcreate': True, 'merrors': merrors, 'minfos': minfos, 'rand': rand, 'fname': fname, 'extension': extension,
         'mempath': mempath, 'otherpath': otherpath, 'nbmemb': nbmemb})
 
+@login_required
+@never_cache
+@transaction.atomic
+@require_POST
+def MemNewVersion(request, pk=None):
+    if MembraneTopol.objects.filter(pk=pk).exists():
+        mt = MembraneTopol.objects.get(pk=pk)
+        if mt.curator != request.user:
+            return redirect('homepage')
+        
+        pk = mt.clone().pk
+        return redirect(reverse('memdetail', args=[pk]))
 
 @login_required
 @never_cache
@@ -775,10 +788,14 @@ def MemUpdate(request, pk=None):
                     if nbs > nbmemb:
                         nbmemb = nbs
             formset = MemFormSet(data)
+        
         return render(request, 'membranes/mem_form.html',
-                      {'topform': topform, 'memform': memform, 'formset': formset, 'tops': Topology.objects.all(),
-                       'membranes': True, 'merrors': merrors, 'minfos': minfos, 'rand': rand, 'fname': fname,
-                       'extension': extension, 'mempath': mempath, 'otherpath': otherpath, 'nbmemb': nbmemb})
+                {
+                    'pk': pk, 'topform': topform, 'memform': memform, 'formset': formset, 'tops': Topology.objects.all(),
+                    'membranes': True, 'merrors': merrors, 'minfos': minfos, 'rand': rand, 'fname': fname,
+                    'extension': extension, 'mempath': mempath, 'otherpath': otherpath, 'nbmemb': nbmemb
+                },
+            )
     else:
         return HttpResponseRedirect(reverse('memlist'))
 
@@ -827,10 +844,14 @@ def MemDetail(request, pk=None):
         else:
             form = MemCommentForm()
         comments = MemComment.objects.filter(membrane=membrane)
+        
+        root = membrane.root_version if membrane.root_version else membrane
+        versions = [root] + list(MembraneTopol.objects.filter(root_version=root).order_by('version').all())
+        
         return render(request, 'membranes/mem_detail.html',
                       {'membranetopol': membrane, 'comments': comments, 'form': form, 'mem_file': mem_file,
                        'other_file': other_file, 'other_filelist': other_filelist, 'rep': representation,
-                       'nblip': nblip, 'prop': prop, 'membranes': True})
+                       'nblip': nblip, 'prop': prop, 'membranes': True, 'versions':versions})
 
 
 @login_required

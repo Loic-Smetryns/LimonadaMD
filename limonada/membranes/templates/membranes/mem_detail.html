@@ -7,6 +7,27 @@
 
 {% block content %}
 
+  <div class="row ml-3 mb-3">
+    <div class="row align-items-center">
+      <label class="font-weight-bold form-select">Versions</label>
+      <div class="ml-2 mr-2">
+        <select id="versions" name="versions" id="versions" class="custom-select">
+          {% for version in versions %}
+            <option value="{% url 'memdetail' version.pk %}" {% if membranetopol.pk == version.pk%}selected{% endif %} >{{ version.version }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% if user.is_authenticated %}
+        {% if user == membranetopol.curator %}
+          <form method="post" action="{% url 'mem-new-version' membranetopol.pk %}">
+            {% csrf_token %}
+            <button class="btn btn-primary" type="submit">Nouvelle Version</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
   <div class="row align-items-center justify-content-between">
     <div class="col-auto"><h1>Membranes</h1></div>
     <div class="col-auto">
@@ -250,6 +271,12 @@
 {% block script %}
 
   <script>
+    window.addEventListener('load', (event) => {
+      document.getElementById('versions').addEventListener('change', (event) => {
+        window.location.href = event.target.value;
+      }); // La parenthèse fermante et le point-virgule étaient mal placés
+    });
+
     $(document).ready(function(){
       $(".comments").scrollTop($(".comments")[0].scrollHeight);
     });

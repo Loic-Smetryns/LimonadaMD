@@ -23,6 +23,7 @@
 from __future__ import unicode_literals
 from unidecode import unidecode
 import os
+import random
 
 # Django
 from django.conf import settings
@@ -34,6 +35,7 @@ from django.dispatch.dispatcher import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.formats import localize
 from django.urls import reverse
+from django.core.files.base import ContentFile
 
 # Django apps
 from limonada.functions import delete_file
@@ -121,6 +123,9 @@ class MembraneTopol(models.Model):
     doi = models.ManyToManyField('membranes.MembraneDoi',  # This file is used to add doi link for Zenodo
                                  blank=True)
     
+    version = models.IntegerField(default=1)
+    root_version = models.ForeignKey('membranes.MembraneTopol', null=True, on_delete=models.DO_NOTHING)
+    
     @property
     def tags(self):
         if self.membrane is None:
@@ -152,6 +157,55 @@ class MembraneTopol(models.Model):
             self.mem_file = saved_mem_file
             self.other_file = saved_other_file
         super(MembraneTopol, self).save(*args, **kwargs)
+        
+    def clone(self):
+        mem_clone = MembraneTopol(
+            pk=None,
+            name=self.name,
+            search_name=self.search_name,
+            temperature=self.temperature,
+            equilibration=self.equilibration,
+            software_id=self.software_id,
+            forcefield_id=self.forcefield_id,
+            nb_lipids=self.nb_lipids,
+            description=self.description,
+            date=self.date,
+            curator_id=self.curator_id,
+            membrane=self.membrane
+        )
+        
+        mem_clone.save()
+        
+        clone_file_prefix = f"membranes/LIM{mem_clone.pk}"
+        
+        def clone_file(file, file_out):
+            if file :
+                clone_file = os.path.join(clone_file_prefix, file.name[14:])
+                
+                file_out.save(clone_file, ContentFile(file.read()), save=True)
+            
+        clone_file(self.mem_file, mem_clone.mem_file)
+        clone_file(self.compo_file, mem_clone.compo_file)
+        clone_file(self.other_file, mem_clone.other_file)
+        
+        for composition in self.topolcomposition_set.all():
+            composition.clone(mem_clone)
+        
+        mem_clone.prot.set(self.prot.all())
+        mem_clone.reference.set(self.reference.all())
+        mem_clone.doi.set(self.doi.all())
+        
+        mem_clone.root_version = self.root_version if self.root_version else self
+        
+        last_version = MembraneTopol.objects.filter(
+            root_version=mem_clone.root_version
+        ).order_by('-version').first()
+        
+        mem_clone.version = last_version.version + 1 if last_version else 2
+        
+        mem_clone.save()
+        
+        return mem_clone
 
 class TopolComposition(models.Model):
 
@@ -174,6 +228,18 @@ class TopolComposition(models.Model):
     side = models.CharField(max_length=4,
                             choices=LEAFLET_CHOICES,
                             default=UPPER)
+    
+    def clone(self, mem_topol):
+        comp_clone = TopolComposition.objects.create(
+            membrane=mem_topol,
+            lipid=self.lipid,
+            topology=self.topology,
+            number=self.number,
+            side=self.side
+        )
+        
+        comp_clone.save()
+        return comp_clone
 
 
 @python_2_unicode_compatible
@@ -204,6 +270,18 @@ class Membrane(models.Model):
     tag = models.ManyToManyField('membranes.MembraneTag',
                                  blank=True)
     nb_liptypes = models.PositiveIntegerField(null=True)
+
+    def clone(self):
+        mem_clone = Membrane.objects.create(
+            name=self.name,
+            nb_liptypes=self.nb_liptypes
+        )
+        
+        mem_clone.tag.set(self.tag.all())
+        
+        mem_clone.save()
+        
+        return mem_clone
 
     def __str__(self):
         return self.name
