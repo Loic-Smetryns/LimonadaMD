@@ -366,9 +366,44 @@
           } else {
             $(s1).append('<option value="">---------</option>');
           }
+
+          update_ff_version();
         }
       });
     }
+
+    function update_ff_version() {
+      var ff_id = $("#id_forcefield").val();
+      if (ff_id) {
+          $.ajax({
+              url: '{% url "get_ff_versions" %}',
+              data: {'ff_id': ff_id},
+              dataType: 'json',
+              success: function(data) {
+                  var versionField = $("#id_version");
+                  versionField.empty();
+                  
+                  if (data.versions && data.versions.length > 0) {
+                      $.each(data.versions, function(index, version) {
+                          versionField.append(
+                              $('<option></option>')
+                                  .val(version.value)  // Valeur soumise
+                                  .text(version.text)  // Texte affiché
+                          );
+                      });
+                  } else {
+                      versionField.append(
+                          $('<option></option>').val('').text('Aucune version disponible')
+                      );
+                  }
+              },
+              error: function() {
+                  $("#id_version").html('<option value="">Erreur de chargement</option>');
+              }
+          });
+      }
+    }
+
     $("#id_software").change(function() {
       var ff = $("#id_forcefield").val();
       populate();
@@ -381,6 +416,9 @@
     $(document).on('change', '#id_forcefield', function(e){
       var ff = $("#id_forcefield").val();
       var total = parseInt($('#id_form-TOTAL_FORMS').val());
+
+      update_ff_version();
+
       for (var i=0; i<total; i++) {
         updatetopselect($('#id_form-'+i+'-lipid'), ff);
       }

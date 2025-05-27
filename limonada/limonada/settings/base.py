@@ -119,7 +119,7 @@ WSGI_APPLICATION = 'limonada.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-MYSQL=True
+MYSQL=False
 
 if not MYSQL:
     DATABASES = {

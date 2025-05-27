@@ -54,7 +54,8 @@ class MembraneTopolForm(ModelForm):
 
     name = forms.CharField(label='Name',
                            widget=TextInput(attrs={'class': 'form-control'}))
-    forcefield = forms.ModelChoiceField(queryset=Forcefield.objects.all())
+    forcefield = forms.ModelChoiceField(queryset=Forcefield.objects.all().filter(version=1))
+    
     temperature = forms.IntegerField(label='Temperature (°K)',
                                      widget=NumberInput(attrs={'class': 'form-control'}))
     equilibration = forms.IntegerField(label='Equilibration (ns)',
@@ -68,7 +69,7 @@ class MembraneTopolForm(ModelForm):
 
     class Meta:
         model = MembraneTopol
-        fields = ['name', 'software', 'forcefield', 'temperature', 'equilibration', 'mem_file', 'other_file',
+        fields = ['name', 'software', 'forcefield', 'version', 'temperature', 'equilibration', 'mem_file', 'other_file',
                   'doi', 'description', 'prot', 'reference']
         widgets = {'reference': autocomplete.ModelSelect2Multiple(url='reference-autocomplete'),
                    'software': autocomplete.ModelSelect2(url='software-autocomplete'),
@@ -76,7 +77,9 @@ class MembraneTopolForm(ModelForm):
                                                              attrs={'data-placeholder': 'e.g., GPRC'}),
                    'doi': autocomplete.ModelSelect2Multiple(url='membranedoiautocomplete',
                                                             attrs={'data-placeholder': 'e.g., 10.5281/zenodo.4424934'}),
-                   'forcefield': Select(attrs={'class': 'form-control'})}
+                   'forcefield': Select(attrs={'class': 'form-control'}),
+                   'version': Select(attrs={'class': 'form-control'})
+                   }
         labels = {'reference': 'References', 'prot': 'Proteins', 'doi': 'Zenodo DOI'}
 
     def clean(self):
